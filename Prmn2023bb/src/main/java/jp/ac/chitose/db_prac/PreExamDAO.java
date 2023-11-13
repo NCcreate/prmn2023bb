@@ -5,12 +5,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PreExamDAO {
-    private static final String URL = "~/h2db/db_prac;Mode=PostgreSQL;AUTO_SERVER=TRUE;";
+    private static final String URL = "jdbc:h2:~/h2db/db_prac;Mode=PostgreSQL;AUTO_SERVER=TRUE;";
     private static final String USER_NAME = "b2220920";
     private static final String USER_PASS = "b2220920";
     public List<PreExam> selectPreExams(int lessThan) throws SQLException{
         List<PreExam> returning = new ArrayList();
-        String SQL = "  ";
+        String SQL = "select * from 学生情報re WHERE 得点 < ?";
 
         try(Connection conn = DriverManager.getConnection(URL,USER_NAME,USER_PASS);
         PreparedStatement stmt = conn.prepareStatement(SQL)){
@@ -26,5 +26,30 @@ public class PreExamDAO {
             }
         }
         return returning;
+    }
+
+    public int deletePreExam(String gakusekiCode) throws SQLException{
+        String sql = "DELETE FROM 学生情報re WHERE 学生コード = ?";
+        int n = 0;
+        try(Connection conn = DriverManager.getConnection(URL,USER_NAME,USER_PASS);
+        PreparedStatement stmt = conn.prepareStatement(sql)){
+            stmt.setString(1,gakusekiCode);
+            n = stmt.executeUpdate();
+        }
+        return n;
+    }
+
+    public int insertPreExam(String gakusekiCode,String familyName,String firstName,int point) throws SQLException{
+        String sql = "INSERT INTO 学生情報re(学生コード,氏名,得点) VALUES(?,?,?)";
+        int n = 0;
+        try(Connection conn = DriverManager.getConnection(URL,USER_NAME,USER_PASS);
+            PreparedStatement stmt = conn.prepareStatement(sql)){
+            stmt.setString(1,gakusekiCode);
+            stmt.setString(2,familyName);
+            stmt.setString(3,firstName);
+            stmt.setInt(4,point);
+            n = stmt.executeUpdate();
+        }
+        return n;
     }
 }
